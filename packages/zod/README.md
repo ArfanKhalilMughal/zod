@@ -10,7 +10,7 @@
 >
 > **What differs**
 > - **Array issue cap:** an array schema now stops validating once it has recorded `maxArrayIssues` issues (default `1000`). The first 1000 issues are identical to what zod reports; the rest are dropped. Valid input and arrays with fewer failures behave exactly as before. To restore the old unbounded behavior, call `z.config({ maxArrayIssues: Infinity })`.
-> - **Package name and metadata:** published as `@zklogic/zod`, version `4.6.6` (the fix on top of upstream 4.6.5). The `forkedFrom` field in `package.json` credits the original authors.
+> - **Package name and metadata:** published as `@zklogic/zod`, version `4.6.7` (the fix on top of upstream 4.6.5). The `forkedFrom` field in `package.json` credits the original authors.
 > - **Tests:** three regression tests in `src/v4/classic/tests/array.test.ts` cover the cap, the `maxArrayIssues` option and async arrays.
 > - **Staying current:** `scripts/sync-upstream.sh` merges new upstream commits into the fork and re-applies the fork metadata.
 >
@@ -59,7 +59,7 @@
 Zod is a TypeScript-first validation library. Define a schema and parse some data with it. You'll get back a strongly typed, validated result.
 
 ```ts
-import * as z from "zod";
+import * as z from "@zklogic/zod";
 
 const User = z.object({
   name: z.string(),
@@ -95,7 +95,7 @@ console.log(data.name);
 ## Installation
 
 ```sh
-npm install zod
+npm install @zklogic/zod
 ```
 
 <br/>
@@ -105,7 +105,7 @@ npm install zod
 Before you can do anything else, you need to define a schema. For the purposes of this guide, we'll use a simple object schema.
 
 ```ts
-import * as z from "zod";
+import * as z from "@zklogic/zod";
 
 const Player = z.object({
   username: z.string(),
