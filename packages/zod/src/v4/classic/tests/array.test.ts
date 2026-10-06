@@ -277,7 +277,7 @@ test("maxArrayIssues is configurable", () => {
     z.config({ maxArrayIssues: 5 });
     const result = z.array(z.string()).safeParse(Array(100).fill(1));
     expect(result.error!.issues.length).toBe(5);
-    z.config({ maxArrayIssues: Infinity });
+    z.config({ maxArrayIssues: Number.POSITIVE_INFINITY });
     expect(z.array(z.string()).safeParse(Array(2000).fill(1)).error!.issues.length).toBe(2000);
   } finally {
     z.config({ maxArrayIssues: previous });
