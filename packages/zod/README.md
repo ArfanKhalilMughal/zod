@@ -1,3 +1,21 @@
+> **Fork notice:** `@zklogic/zod` is a maintained fork of [`zod`](https://github.com/colinhacks/zod) (MIT, © Colin McDonnell) that fixes [CVE-2023-54404](https://nvd.nist.gov/vuln/detail/CVE-2023-54404), for which no upstream release exists yet. It is otherwise identical to zod 4.6.5. To use it for every dependent in your tree, alias it in `package.json`:
+>
+> ```json
+> { "overrides": { "zod": "npm:@zklogic/zod@^4.6.6" } }
+> ```
+>
+> ## What changed from `zod`, and why
+>
+> **Why.** In zod 4.6.5 and earlier, validating an array records one issue per failing element with no limit, so a large invalid array (for example 20,000 empty objects against a 100-field element schema) allocates millions of issue objects and can crash the process with an out-of-memory error. No patched upstream release is available, and tools such as `@angular/forms` and `@angular/cli` depend on zod and cannot be upgraded past it.
+>
+> **What differs**
+> - **Array issue cap:** an array schema now stops validating once it has recorded `maxArrayIssues` issues (default `1000`). The first 1000 issues are identical to what zod reports; the rest are dropped. Valid input and arrays with fewer failures behave exactly as before. To restore the old unbounded behavior, call `z.config({ maxArrayIssues: Infinity })`.
+> - **Package name and metadata:** published as `@zklogic/zod`, version `4.6.7` (the fix on top of upstream 4.6.5). The `forkedFrom` field in `package.json` credits the original authors.
+> - **Tests:** three regression tests in `src/v4/classic/tests/array.test.ts` cover the cap, the `maxArrayIssues` option and async arrays.
+> - **Staying current:** `scripts/sync-upstream.sh` merges new upstream commits into the fork and re-applies the fork metadata.
+>
+> Everything else, including the license, is unchanged. Bugs in zod itself belong [upstream](https://github.com/colinhacks/zod/issues); bugs in this fork belong in the [fork's issues](https://github.com/ArfanKhalilMughal/zod/issues).
+
 <p align="center">
   <img src="logo.svg" width="200px" align="center" alt="Zod logo" />
   <h1 align="center">Zod</h1>
@@ -41,7 +59,7 @@
 Zod is a TypeScript-first validation library. Define a schema and parse some data with it. You'll get back a strongly typed, validated result.
 
 ```ts
-import * as z from "zod";
+import * as z from "@zklogic/zod";
 
 const User = z.object({
   name: z.string(),
@@ -77,7 +95,7 @@ console.log(data.name);
 ## Installation
 
 ```sh
-npm install zod
+npm install @zklogic/zod
 ```
 
 <br/>
@@ -87,7 +105,7 @@ npm install zod
 Before you can do anything else, you need to define a schema. For the purposes of this guide, we'll use a simple object schema.
 
 ```ts
-import * as z from "zod";
+import * as z from "@zklogic/zod";
 
 const Player = z.object({
   username: z.string(),

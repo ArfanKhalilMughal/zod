@@ -1,9 +1,24 @@
 {
-  "name": "zod",
-  "version": "4.6.5",
+  "name": "@zklogic/zod",
+  "version": "4.6.7",
   "type": "module",
   "license": "MIT",
-  "author": "Colin McDonnell <zod@colinhacks.com>",
+  "author": {
+    "name": "Arfan Khalil Mughal",
+    "email": "arfankhalil@hotmail.com",
+    "url": "https://github.com/ArfanKhalilMughal"
+  },
+  "contributors": [
+    "Colin McDonnell <zod@colinhacks.com>"
+  ],
+  "forkedFrom": {
+    "repository": "https://github.com/colinhacks/zod",
+    "author": "Colin McDonnell",
+    "url": "https://github.com/colinhacks"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "TypeScript-first schema declaration and validation library with static type inference",
   "homepage": "https://zod.dev",
   "llms": "https://zod.dev/llms.txt",
@@ -126,10 +141,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/colinhacks/zod.git"
+    "url": "git+https://github.com/ArfanKhalilMughal/zod.git",
+    "directory": "packages/zod"
   },
   "bugs": {
-    "url": "https://github.com/colinhacks/zod/issues"
+    "email": "arfankhalil@hotmail.com",
+    "url": "https://github.com/ArfanKhalilMughal/zod/issues"
   },
   "support": {
     "backing": {
