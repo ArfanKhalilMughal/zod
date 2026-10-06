@@ -1,0 +1,69 @@
+name: Publish @zklogic/zod
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Tag to publish (must be a v* version tag)
+        required: true
+        type: string
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      npm_config_package_manager_strict: 'false'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+          fetch-depth: 0
+      - name: Check for version tag
+        id: version_tag
+        run: |
+          if git tag --points-at HEAD | grep -Eq '^v.+'; then
+            echo "is_version_tag=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_version_tag=false" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-node@v4
+        if: steps.version_tag.outputs.is_version_tag == 'true'
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+      - name: Upgrade npm for OIDC provenance support
+        if: steps.version_tag.outputs.is_version_tag == 'true'
+        run: npm install -g npm@latest
+      - name: Verify tag matches packages/zod version
+        if: steps.version_tag.outputs.is_version_tag == 'true'
+        run: |
+          PKG_VERSION="v$(node -p "require('./packages/zod/package.json').version")"
+          if ! git tag --points-at HEAD | grep -Fxq "$PKG_VERSION"; then
+            echo "ERROR: no tag $PKG_VERSION on this commit (packages/zod version mismatch)."
+            exit 1
+          fi
+      - name: Install dependencies
+        if: steps.version_tag.outputs.is_version_tag == 'true'
+        run: npx -y pnpm@10 install --lockfile=false --ignore-scripts
+      - name: Test (array issue cap, CVE-2023-54404)
+        if: steps.version_tag.outputs.is_version_tag == 'true'
+        run: npx vitest run packages/zod/src/v4/classic/tests/array.test.ts --project zod
+      - name: Build
+        if: steps.version_tag.outputs.is_version_tag == 'true'
+        working-directory: packages/zod
+        run: |
+          npx zshy --project tsconfig.build.json
+          node --experimental-strip-types ../../scripts/write-stub-package-jsons.ts
+      - name: Check package contents
+        if: steps.version_tag.outputs.is_version_tag == 'true'
+        working-directory: packages/zod
+        run: npm pack --dry-run
+      - name: Publish
+        if: steps.version_tag.outputs.is_version_tag == 'true'
+        working-directory: packages/zod
+        run: npm publish --access public --ignore-scripts

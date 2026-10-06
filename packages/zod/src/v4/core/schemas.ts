@@ -1844,9 +1844,16 @@ export interface $ZodArrayInternals<T extends SomeType = $ZodType> extends _$Zod
 
 export interface $ZodArray<T extends SomeType = $ZodType> extends $ZodType<any, any, $ZodArrayInternals<T>> {}
 
+const DEFAULT_MAX_ARRAY_ISSUES = 1000;
+
 function handleArrayResult(result: ParsePayload<any>, final: ParsePayload<any[]>, index: number) {
   if (result.issues.length) {
-    final.issues.push(...util.prefixIssues(index, result.issues));
+    // CVE-2023-54404: bound the issues recorded per array so a large invalid input cannot exhaust memory.
+    const room = (core.globalConfig.maxArrayIssues ?? DEFAULT_MAX_ARRAY_ISSUES) - final.issues.length;
+    if (room > 0) {
+      const issues = util.prefixIssues(index, result.issues);
+      for (let i = 0; i < issues.length && i < room; i++) final.issues.push(issues[i]!);
+    }
   }
   final.value[index] = result.value;
 }
@@ -1890,6 +1897,8 @@ export const $ZodArray: core.$constructor<$ZodArray> = /*@__PURE__*/ core.$const
         handleArrayResult(result, payload, i);
         // the element's payload is authoritative here, since handleArrayResult forwards every issue; an object's is not, because it drops a failed absent optional
         if (abortEarly && result.issues.length !== 0 && util.aborted(result)) break;
+        // CVE-2023-54404: stop validating once the issue cap is reached.
+        if (payload.issues.length >= (core.globalConfig.maxArrayIssues ?? DEFAULT_MAX_ARRAY_ISSUES)) break;
       }
     }
 

@@ -1,0 +1,28 @@
+{
+  "name": "@zklogic/zod",
+  "author": {
+    "name": "Arfan Khalil Mughal",
+    "email": "arfankhalil@hotmail.com",
+    "url": "https://github.com/ArfanKhalilMughal"
+  },
+  "contributors": [
+    "Colin McDonnell <zod@colinhacks.com>"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ArfanKhalilMughal/zod.git",
+    "directory": "packages/zod"
+  },
+  "forkedFrom": {
+    "repository": "https://github.com/colinhacks/zod",
+    "author": "Colin McDonnell",
+    "url": "https://github.com/colinhacks"
+  },
+  "bugs": {
+    "email": "arfankhalil@hotmail.com",
+    "url": "https://github.com/ArfanKhalilMughal/zod/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

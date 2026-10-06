@@ -196,6 +196,12 @@ export interface $ZodConfig {
   localeError?: errors.$ZodErrorMap | undefined;
   /** Disable JIT schema compilation. Useful in environments that disallow `eval`. */
   jitless?: boolean | undefined;
+  /**
+   * Maximum number of issues an array schema records before it stops validating further elements
+   * (CVE-2023-54404: a large invalid array otherwise allocates one issue per element). Defaults to 1000;
+   * set `Infinity` to restore unbounded reporting.
+   */
+  maxArrayIssues?: number | undefined;
   /** Enables parsing input that contains reference cycles. Read when a schema is constructed. */
   memoizer?: schemas.$ZodMemoizer | undefined;
   /**

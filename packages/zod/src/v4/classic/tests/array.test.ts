@@ -262,3 +262,30 @@ test("parse should fail given sparse array", () => {
 //     expect(issue?.message).toEqual("Custom message: '1,2' are not unique");
 //   }
 // });
+
+test("caps recorded issues for large invalid arrays (CVE-2023-54404)", () => {
+  const schema = z.array(z.object({ a: z.string(), b: z.string() }));
+  const result = schema.safeParse(Array.from({ length: 50_000 }, () => ({})));
+  expect(result.success).toBe(false);
+  expect(result.error!.issues.length).toBe(1000);
+  expect(result.error!.issues[0]!.path).toEqual([0, "a"]);
+});
+
+test("maxArrayIssues is configurable", () => {
+  const previous = z.config().maxArrayIssues;
+  try {
+    z.config({ maxArrayIssues: 5 });
+    const result = z.array(z.string()).safeParse(Array(100).fill(1));
+    expect(result.error!.issues.length).toBe(5);
+    z.config({ maxArrayIssues: Infinity });
+    expect(z.array(z.string()).safeParse(Array(2000).fill(1)).error!.issues.length).toBe(2000);
+  } finally {
+    z.config({ maxArrayIssues: previous });
+  }
+});
+
+test("caps recorded issues for async arrays", async () => {
+  const schema = z.array(z.string().refine(async () => true));
+  const result = await schema.safeParseAsync(Array(5000).fill(1));
+  expect(result.error!.issues.length).toBe(1000);
+});
