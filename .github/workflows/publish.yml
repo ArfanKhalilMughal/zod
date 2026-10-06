@@ -52,7 +52,7 @@ jobs:
         run: npx -y pnpm@10 install --lockfile=false --ignore-scripts
       - name: Test (array issue cap, CVE-2023-54404)
         if: steps.version_tag.outputs.is_version_tag == 'true'
-        run: npx vitest run packages/zod/src/v4/classic/tests/array.test.ts --project zod
+        run: npx vitest run packages/zod/src/v4/classic/tests/array.test.ts --project @zklogic/zod
       - name: Build
         if: steps.version_tag.outputs.is_version_tag == 'true'
         working-directory: packages/zod
